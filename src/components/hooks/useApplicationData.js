@@ -75,6 +75,7 @@ export default function useApplicationData() {
       axios.get("/api/appointments"),
       axios.get("/api/interviewers")
     ]).then(all => {
+      console.log(all);
       dispatch({
         type: "INIT_DATA",
         days: all[0].data,
@@ -83,6 +84,8 @@ export default function useApplicationData() {
       });
     });
   }, []);
+
+  console.log("State", state);
 
   const setDay = day => dispatch({ type: "UPDATE_DAY", day: day });
 
