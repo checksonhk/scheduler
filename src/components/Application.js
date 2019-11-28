@@ -12,16 +12,30 @@ import {
 } from "./helpers/selectors";
 
 export default function Application(props) {
-
   const {
-    state, 
+    state,
     setDay,
     bookInterview,
     cancelInterview
   } = useApplicationData();
 
-  const appointments = getAppointmentsForDay(state, state.day);
   const interviewers = getInterviewersForDay(state, state.day);
+  const appointments = getAppointmentsForDay(state, state.day).map(
+    appointment => {
+      const interview = getInterview(state, appointment.interview);
+      return (
+        <Appointment
+          key={appointment.id}
+          id={appointment.id}
+          time={appointment.time}
+          interview={interview}
+          interviewers={interviewers}
+          bookInterview={bookInterview}
+          cancelInterview={cancelInterview}
+        />
+      );
+    }
+  );
 
   return (
     <main className="layout">
@@ -42,21 +56,8 @@ export default function Application(props) {
         />
       </section>
       <section className="schedule">
-        {appointments.map(appointment => {
-          const interview = getInterview(state, appointment.interview);
-          console.log("interview", interview);
-          return (
-            <Appointment
-              key={appointment.id}
-              id={appointment.id}
-              time={appointment.time}
-              interview={interview}
-              interviewers={interviewers}
-              bookInterview={bookInterview}
-              cancelInterview={cancelInterview}
-            />
-          );
-        })}
+        {appointments}
+        <Appointment key="last" time="5pm" />
       </section>
     </main>
   );
