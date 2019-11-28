@@ -19,7 +19,7 @@ const reducer = function(oldState, action) {
 
       const appointment = {
         ...oldState.appointments[action.id],
-        interview: { ...action.interview }
+        interview: action.interview
       };
 
       const appointments = {
@@ -28,6 +28,22 @@ const reducer = function(oldState, action) {
       };
       return { ...oldState, appointments: appointments };
     }
+    case "UPDATE_SPOTS": {
+      const idx = oldState.days.findIndex(day =>
+        day.appointments.includes(action.id)
+      );
+      const newDay = {
+        ...oldState,
+        days: oldState.days.map((day, index) => {
+          if (index === idx) {
+            return { ...day, spots: day.spots + (action.increase ? 1 : -1) };
+          }
+          return day;
+        })
+      };
+      return newDay;
+    }
+
     default: {
       console.log("Unknown Action", action);
       return oldState;
@@ -65,7 +81,8 @@ export default function useApplicationData() {
       interview: interview
     };
     return axios.put(`/api/appointments/${id}`, appointment).then(success => {
-      dispatch({ type: "UPDATE_INTERVIEW", id, interview });
+      dispatch({ type: "UPDATE_INTERVIEW", id, interview: interview });
+      dispatch({ type: "UPDATE_SPOTS", id });
     });
   };
 
@@ -78,6 +95,7 @@ export default function useApplicationData() {
       .delete(`/api/appointments/${id}`, appointment)
       .then(success => {
         dispatch({ type: "UPDATE_INTERVIEW", id, interview: null });
+        dispatch({ type: "UPDATE_SPOTS", id, increase: true });
       });
   };
 
