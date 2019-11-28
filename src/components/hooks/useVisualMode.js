@@ -30,7 +30,7 @@ export default function useVisualMode(initialValue) {
 
   console.log("history", history);
   return { mode, transition, back };
-}
+};
 
 /* FUCK HISTORY */
 /*
