@@ -27,9 +27,9 @@ export default function useVisualMode(initialValue) {
     // gets the last element in history array
   };
 
-  console.log("history", history);
+  // console.log("history", history);
   return { mode, transition, back };
-};
+}
 
 /* FUCK HISTORY */
 /*
