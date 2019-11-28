@@ -10,7 +10,7 @@ const reducer = function(oldState, action) {
         appointments: action.appointments,
         interviewers: action.interviewers
       };
-    case "CHANGE_DAY":
+    case "UPDATE_DAY":
       console.log("updating day");
       return { ...oldState, day: action.value };
     case "UPDATE_APPLICATION_DATA":
@@ -18,11 +18,17 @@ const reducer = function(oldState, action) {
       return { ...oldState, [action.param]: action.value };
     case "UPDATE_INTERVIEW": {
       console.log("updating interview");
+
       const appointment = {
         ...oldState.appointments[action.id],
         interview: { ...action.interview }
       };
-      return { ...oldState, appointment: appointment };
+
+      const appointments = {
+        ...oldState.appointments,
+        [action.id]: appointment
+      };
+      return { ...oldState, appointments: appointments };
     }
     default: {
       console.log("Unknown Action", action);
@@ -52,6 +58,30 @@ export default function useApplicationData() {
       });
     });
   }, []);
+
+  const setDay = day => dispatch({ type: "UPDATE_DAY", days: day });
+
+  const bookInterview = function(id, interview) {
+    const appointment = {
+      ...state.appointments[id],
+      interview: { interview }
+    };
+    return axios.put(`/api/appointments/${id}`, appointment).then(success => {
+      dispatch({ type: "UPDATE_INTERVIEW", id, interview });
+    });
+  };
+
+  const cancelInterview = function(id) {
+    const appointment = {
+      ...state.appointments[id],
+      interview: null
+    };
+    return axios
+      .delete(`/api/appointments/${id}`, appointment)
+      .then(success => {
+        dispatch({ type: "UPDATE_INTERVIEW", id, interview: null });
+      });
+  };
 
   return { state, setDay, bookInterview, cancelInterview };
 }
