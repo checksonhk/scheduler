@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { userInfo } from "os";
 
 export default function useVisualMode(initialValue) {
   const [mode, setMode] = useState(initialValue);
