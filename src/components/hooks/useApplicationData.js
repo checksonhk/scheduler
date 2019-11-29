@@ -11,10 +11,10 @@ const reducer = function(oldState, action) {
         appointments: action.appointments,
         interviewers: action.interviewers
       };
-    case "UPDATE_DAY":
+    case "SET_DAY":
       console.log("updating day");
       return { ...oldState, day: action.day };
-    case "UPDATE_INTERVIEW": {
+    case "SET_INTERVIEW": {
       console.log("updating interview");
 
       const appointment = {
@@ -28,7 +28,7 @@ const reducer = function(oldState, action) {
       };
       return { ...oldState, appointments: appointments };
     }
-    case "UPDATE_SPOTS": {
+    case "SET_SPOTS": {
       const idx = oldState.days.findIndex(day =>
         day.appointments.includes(action.id)
       );
@@ -64,8 +64,14 @@ export default function useApplicationData() {
     /* Connect to Server */
     const webSocket = new WebSocket("ws://localhost:8001");
     webSocket.addEventListener("open", () => {
-      console.log("connected");
+      console.log("CONNECTED");
       dispatch({ type: "SET_SOCKET", value: webSocket });
+    });
+
+    webSocket.addEventListener("message", msg => {
+      const data = JSON.parse(msg.data);
+      console.log("data", data);
+      dispatch({ ...data });
     });
 
     Promise.all([
@@ -87,7 +93,7 @@ export default function useApplicationData() {
     };
   }, [dispatch]);
 
-  const setDay = day => dispatch({ type: "UPDATE_DAY", days: day });
+  const setDay = day => dispatch({ type: "SET_DAY", days: day });
 
   const bookInterview = function(id, interview) {
     const appointment = {
@@ -95,8 +101,8 @@ export default function useApplicationData() {
       interview: interview
     };
     return axios.put(`/api/appointments/${id}`, appointment).then(success => {
-      dispatch({ type: "UPDATE_INTERVIEW", id, interview: interview });
-      dispatch({ type: "UPDATE_SPOTS", id });
+      dispatch({ type: "SET_INTERVIEW", id, interview: interview });
+      dispatch({ type: "SET_SPOTS", id });
     });
   };
 
@@ -108,8 +114,8 @@ export default function useApplicationData() {
     return axios
       .delete(`/api/appointments/${id}`, appointment)
       .then(success => {
-        dispatch({ type: "UPDATE_INTERVIEW", id, interview: null });
-        dispatch({ type: "UPDATE_SPOTS", id, increase: true });
+        dispatch({ type: "SET_INTERVIEW", id, interview: null });
+        dispatch({ type: "SET_SPOTS", id, increase: true });
       });
   };
 

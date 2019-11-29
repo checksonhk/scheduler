@@ -20,9 +20,10 @@ export default function Appointment(props) {
   const ERROR_SAVE = "ERROR_SAVE";
   const ERROR_DELETE = "ERROR_DELETE";
 
-  console.log("INTERVIEW", props.interview);
+  
+
   const { mode, transition, back } = useVisualMode(
-    (props.interview && props.interview.student) ? SHOW : EMPTY
+    (props.interview) ? SHOW : EMPTY
   );
 
   const save = function(name, interviewer) {
@@ -55,7 +56,7 @@ export default function Appointment(props) {
     <article className="appointment">
       <Header time={props.time}></Header>
       {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
-      {mode === SHOW && (
+      {mode === SHOW && props.interview && (
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}
