@@ -53,21 +53,6 @@ const reducer = function(oldState, action) {
 
       return { ...oldState, days: newDays, appointments: appointments };
     }
-    // case "SET_SPOTS": {
-    //   const idx = oldState.days.findIndex(day =>
-    //     day.appointments.includes(action.id)
-    //   );
-    //   const newDay = {
-    //     ...oldState,
-    //     days: oldState.days.map((day, index) => {
-    //       if (index === idx) {
-    //         return { ...day, spots: day.spots + (action.increase ? 1 : -1) };
-    //       }
-    //       return day;
-    //     })
-    //   };
-    //   return newDay;
-    // }
     case "SET_SOCKET":
       return { ...oldState, webSocket: action.socket };
 
@@ -87,7 +72,7 @@ export default function useApplicationData() {
   });
   useEffect(() => {
     /* Connect to Server */
-    const webSocket = new WebSocket("ws://localhost:8001");
+    const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
     webSocket.addEventListener("open", () => {
       console.log("CONNECTED");
       dispatch({ type: "SET_SOCKET", value: webSocket });
@@ -127,7 +112,6 @@ export default function useApplicationData() {
     };
     return axios.put(`/api/appointments/${id}`, appointment).then(success => {
       dispatch({ type: "SET_INTERVIEW", id, interview: interview });
-      // dispatch({ type: "SET_SPOTS", id });
     });
   };
 
@@ -145,7 +129,6 @@ export default function useApplicationData() {
           interview: null,
           increase: true
         });
-        // dispatch({ type: "SET_SPOTS", id, increase: true });
       });
   };
 
