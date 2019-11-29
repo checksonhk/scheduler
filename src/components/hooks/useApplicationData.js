@@ -1,8 +1,15 @@
 import React, { useEffect, useReducer } from "react";
 import axios from "axios";
+import { func } from "prop-types";
 
 const reducer = function(oldState, action) {
   // REFRACTOR TO OBJECT STATEMENTS
+  const send_appointment = function(appointment) {
+    if (oldState.webSocket && !action.fromRemote) {
+      console.log("sending...", appointment);
+      oldState.webSocket.send(JSON.stringify({ appointment }));
+    }
+  }
   switch (action.type) {
     case "INIT_DATA":
       return {
@@ -16,7 +23,6 @@ const reducer = function(oldState, action) {
       return { ...oldState, day: action.day };
     case "SET_INTERVIEW": {
       console.log("updating interview");
-
       const appointment = {
         ...oldState.appointments[action.id],
         interview: action.interview
@@ -26,6 +32,7 @@ const reducer = function(oldState, action) {
         ...oldState.appointments,
         [action.id]: appointment
       };
+      send_appointment(appointment);
       return { ...oldState, appointments: appointments };
     }
     case "SET_SPOTS": {
@@ -71,7 +78,7 @@ export default function useApplicationData() {
     webSocket.addEventListener("message", msg => {
       const data = JSON.parse(msg.data);
       console.log("data", data);
-      dispatch({ ...data });
+      dispatch({ ...data, fromRemote: true });
     });
 
     Promise.all([

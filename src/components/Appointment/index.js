@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "components/Appointment/styles.scss";
 import Header from "components/Appointment/Header";
 import Show from "components/Appointment/Show";
@@ -20,10 +20,13 @@ export default function Appointment(props) {
   const ERROR_SAVE = "ERROR_SAVE";
   const ERROR_DELETE = "ERROR_DELETE";
 
-  
+  useEffect(() => {
+    /* causes to transition state when props.interview is changed */
+    props.interview ? transition(SHOW) : transition(EMPTY);
+  }, [props.interview]);
 
   const { mode, transition, back } = useVisualMode(
-    (props.interview) ? SHOW : EMPTY
+    props.interview ? SHOW : EMPTY
   );
 
   const save = function(name, interviewer) {
