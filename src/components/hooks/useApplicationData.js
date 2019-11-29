@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import axios from "axios";
 import { func } from "prop-types";
+import { controlOrMetaKey } from "@storybook/api/dist/modules/shortcuts";
 
 const reducer = function(oldState, action) {
   // REFRACTOR TO OBJECT STATEMENTS
@@ -9,7 +10,7 @@ const reducer = function(oldState, action) {
       console.log("sending...", appointment);
       oldState.webSocket.send(JSON.stringify({ appointment }));
     }
-  }
+  };
   switch (action.type) {
     case "INIT_DATA":
       return {
@@ -33,25 +34,42 @@ const reducer = function(oldState, action) {
         [action.id]: appointment
       };
       send_appointment(appointment);
-      return { ...oldState, appointments: appointments };
-    }
-    case "SET_SPOTS": {
+
+      // const tempState = { ...oldState, appointments: appointments };
+      // console.log("TEMPSTATE", { ...oldState, appointments: appointments });
+
+      /* SET_SPOTS logic added to SET_INTERVIEW */
+      console.log("updating spots");
       const idx = oldState.days.findIndex(day =>
         day.appointments.includes(action.id)
       );
-      const newDay = {
-        ...oldState,
-        days: oldState.days.map((day, index) => {
-          if (index === idx) {
-            return { ...day, spots: day.spots + (action.increase ? 1 : -1) };
-          }
-          return day;
-        })
-      };
-      return newDay;
+      // Calculate the spots instead of updating;
+      const newDays = oldState.days.map((day, index) => {
+        if (index === idx && action.fromRemote) {
+          return { ...day, spots: day.spots + (action.interview ? -1 : 1) };
+        }
+        return day;
+      });
+
+      return { ...oldState, days: newDays, appointments: appointments };
     }
+    // case "SET_SPOTS": {
+    //   const idx = oldState.days.findIndex(day =>
+    //     day.appointments.includes(action.id)
+    //   );
+    //   const newDay = {
+    //     ...oldState,
+    //     days: oldState.days.map((day, index) => {
+    //       if (index === idx) {
+    //         return { ...day, spots: day.spots + (action.increase ? 1 : -1) };
+    //       }
+    //       return day;
+    //     })
+    //   };
+    //   return newDay;
+    // }
     case "SET_SOCKET":
-      return { ...oldState, socket: action.socket };
+      return { ...oldState, webSocket: action.socket };
 
     default: {
       console.log("Unknown Action", action);
@@ -109,7 +127,7 @@ export default function useApplicationData() {
     };
     return axios.put(`/api/appointments/${id}`, appointment).then(success => {
       dispatch({ type: "SET_INTERVIEW", id, interview: interview });
-      dispatch({ type: "SET_SPOTS", id });
+      // dispatch({ type: "SET_SPOTS", id });
     });
   };
 
@@ -121,8 +139,13 @@ export default function useApplicationData() {
     return axios
       .delete(`/api/appointments/${id}`, appointment)
       .then(success => {
-        dispatch({ type: "SET_INTERVIEW", id, interview: null });
-        dispatch({ type: "SET_SPOTS", id, increase: true });
+        dispatch({
+          type: "SET_INTERVIEW",
+          id,
+          interview: null,
+          increase: true
+        });
+        // dispatch({ type: "SET_SPOTS", id, increase: true });
       });
   };
 
