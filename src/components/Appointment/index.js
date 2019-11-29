@@ -21,7 +21,7 @@ export default function Appointment(props) {
   const ERROR_DELETE = "ERROR_DELETE";
 
   useEffect(() => {
-    /* causes to transition state when props.interview is changed */
+    /* causes to transition state when interview is changed */
     props.interview ? transition(SHOW) : transition(EMPTY);
   }, [props.interview]);
 

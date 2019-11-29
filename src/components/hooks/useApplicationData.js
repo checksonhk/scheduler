@@ -35,9 +35,6 @@ const reducer = function(oldState, action) {
       };
       send_appointment(appointment);
 
-      // const tempState = { ...oldState, appointments: appointments };
-      // console.log("TEMPSTATE", { ...oldState, appointments: appointments });
-
       /* SET_SPOTS logic added to SET_INTERVIEW */
       console.log("updating spots");
       const idx = oldState.days.findIndex(day =>
@@ -77,13 +74,13 @@ export default function useApplicationData() {
       console.log("CONNECTED");
       dispatch({ type: "SET_SOCKET", value: webSocket });
     });
-
+    /* Socket Listener to listen to events from Server */
     webSocket.addEventListener("message", msg => {
       const data = JSON.parse(msg.data);
       console.log("data", data);
       dispatch({ ...data, fromRemote: true });
     });
-
+    /* Uses axios to get data from api-server */
     Promise.all([
       axios.get("/api/days"),
       axios.get("/api/appointments"),
