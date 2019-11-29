@@ -43,6 +43,8 @@ const reducer = function(oldState, action) {
       };
       return newDay;
     }
+    case "SET_SOCKET":
+      return { ...oldState, socket: action.socket };
 
     default: {
       console.log("Unknown Action", action);
@@ -59,6 +61,13 @@ export default function useApplicationData() {
     interviewers: {}
   });
   useEffect(() => {
+    /* Connect to Server */
+    const webSocket = new WebSocket("ws://localhost:8001");
+    webSocket.addEventListener("open", () => {
+      console.log("connected");
+      dispatch({ type: "SET_SOCKET", value: webSocket });
+    });
+
     Promise.all([
       axios.get("/api/days"),
       axios.get("/api/appointments"),
@@ -71,7 +80,12 @@ export default function useApplicationData() {
         interviewers: all[2].data
       });
     });
-  }, []);
+
+    /* CleanUp Function to close connection */
+    return () => {
+      webSocket.close();
+    };
+  }, [dispatch]);
 
   const setDay = day => dispatch({ type: "UPDATE_DAY", days: day });
 
