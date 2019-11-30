@@ -5,12 +5,8 @@ import { controlOrMetaKey } from "@storybook/api/dist/modules/shortcuts";
 
 const reducer = function(oldState, action) {
   // REFRACTOR TO OBJECT STATEMENTS
-  const send_appointment = function(appointment) {
-    if (oldState.webSocket && !action.fromRemote) {
-      console.log("sending...", appointment);
-      oldState.webSocket.send(JSON.stringify({ appointment }));
-    }
-  };
+
+  /* Helper Functions */
   switch (action.type) {
     case "INIT_DATA":
       return {
@@ -33,7 +29,6 @@ const reducer = function(oldState, action) {
         ...oldState.appointments,
         [action.id]: appointment
       };
-      send_appointment(appointment);
 
       /* SET_SPOTS logic added to SET_INTERVIEW */
       console.log("updating spots");
