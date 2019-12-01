@@ -1,9 +1,16 @@
-import React, { useEffect, useReducer } from "react";
+import React, {
+  useEffect,
+  useReducer
+} from "react";
 import axios from "axios";
-import { func } from "prop-types";
-import { controlOrMetaKey } from "@storybook/api/dist/modules/shortcuts";
+import {
+  func
+} from "prop-types";
+import {
+  controlOrMetaKey
+} from "@storybook/api/dist/modules/shortcuts";
 
-const reducer = function(oldState, action) {
+const reducer = function (oldState, action) {
   // REFRACTOR TO OBJECT STATEMENTS
 
   /* Helper Functions */
@@ -12,12 +19,19 @@ const reducer = function(oldState, action) {
       return {
         ...oldState,
         days: action.days,
-        appointments: action.appointments,
-        interviewers: action.interviewers
+          appointments: action.appointments,
+          interviewers: action.interviewers
       };
     case "SET_DAY":
       console.log("updating day");
-      return { ...oldState, day: action.day };
+      console.log("FEEDING", {
+        ...oldState,
+        day: action.day
+      });
+      return {
+        ...oldState,
+        day: action.day
+      };
     case "SET_INTERVIEW": {
       console.log("updating interview");
       const appointment = {
@@ -38,15 +52,25 @@ const reducer = function(oldState, action) {
       // Calculate the spots instead of updating;
       const newDays = oldState.days.map((day, index) => {
         if (index === idx && action.fromRemote) {
-          return { ...day, spots: day.spots + (action.interview ? -1 : 1) };
+          return {
+            ...day,
+            spots: day.spots + (action.interview ? -1 : 1)
+          };
         }
         return day;
       });
 
-      return { ...oldState, days: newDays, appointments: appointments };
+      return {
+        ...oldState,
+        days: newDays,
+        appointments: appointments
+      };
     }
     case "SET_SOCKET":
-      return { ...oldState, webSocket: action.socket };
+      return {
+        ...oldState,
+        webSocket: action.socket
+      };
 
     default: {
       console.log("Unknown Action", action);
@@ -67,13 +91,19 @@ export default function useApplicationData() {
     const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
     webSocket.addEventListener("open", () => {
       console.log("CONNECTED");
-      dispatch({ type: "SET_SOCKET", value: webSocket });
+      dispatch({
+        type: "SET_SOCKET",
+        value: webSocket
+      });
     });
     /* Socket Listener to listen to events from Server */
     webSocket.addEventListener("message", msg => {
       const data = JSON.parse(msg.data);
       console.log("data", data);
-      dispatch({ ...data, fromRemote: true });
+      dispatch({
+        ...data,
+        fromRemote: true
+      });
     });
     /* Uses axios to get data from api-server */
     Promise.all([
@@ -95,19 +125,27 @@ export default function useApplicationData() {
     };
   }, [dispatch]);
 
-  const setDay = day => dispatch({ type: "SET_DAY", days: day });
+  const setDay = day =>
+    dispatch({
+      type: "SET_DAY",
+      day: day
+    });
 
-  const bookInterview = function(id, interview) {
+  const bookInterview = function (id, interview) {
     const appointment = {
       ...state.appointments[id],
       interview: interview
     };
     return axios.put(`/api/appointments/${id}`, appointment).then(success => {
-      dispatch({ type: "SET_INTERVIEW", id, interview: interview });
+      dispatch({
+        type: "SET_INTERVIEW",
+        id,
+        interview: interview
+      });
     });
   };
 
-  const cancelInterview = function(id) {
+  const cancelInterview = function (id) {
     const appointment = {
       ...state.appointments[id],
       interview: null
@@ -124,5 +162,10 @@ export default function useApplicationData() {
       });
   };
 
-  return { state, setDay, bookInterview, cancelInterview };
+  return {
+    state,
+    setDay,
+    bookInterview,
+    cancelInterview
+  };
 }
