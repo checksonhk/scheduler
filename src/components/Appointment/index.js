@@ -34,6 +34,7 @@ export default function Appointment(props) {
       student: name,
       interviewer
     };
+    
     setMessage("Saving");
     transition(STATUS, true);
     props

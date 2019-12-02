@@ -1,16 +1,7 @@
-import React, {
-  useEffect,
-  useReducer
-} from "react";
+import React, { useEffect, useReducer } from "react";
 import axios from "axios";
-import {
-  func
-} from "prop-types";
-import {
-  controlOrMetaKey
-} from "@storybook/api/dist/modules/shortcuts";
 
-const reducer = function (oldState, action) {
+const reducer = function(oldState, action) {
   // REFRACTOR TO OBJECT STATEMENTS
 
   /* Helper Functions */
@@ -19,21 +10,15 @@ const reducer = function (oldState, action) {
       return {
         ...oldState,
         days: action.days,
-          appointments: action.appointments,
-          interviewers: action.interviewers
+        appointments: action.appointments,
+        interviewers: action.interviewers
       };
     case "SET_DAY":
-      console.log("updating day");
-      console.log("FEEDING", {
-        ...oldState,
-        day: action.day
-      });
       return {
         ...oldState,
         day: action.day
       };
     case "SET_INTERVIEW": {
-      console.log("updating interview");
       const appointment = {
         ...oldState.appointments[action.id],
         interview: action.interview
@@ -45,7 +30,6 @@ const reducer = function (oldState, action) {
       };
 
       /* SET_SPOTS logic added to SET_INTERVIEW */
-      console.log("updating spots");
       const idx = oldState.days.findIndex(day =>
         day.appointments.includes(action.id)
       );
@@ -86,6 +70,7 @@ export default function useApplicationData() {
     appointments: {},
     interviewers: {}
   });
+
   useEffect(() => {
     /* Connect to Server */
     const webSocket = new WebSocket(process.env.REACT_APP_WEBSOCKET_URL);
@@ -99,7 +84,6 @@ export default function useApplicationData() {
     /* Socket Listener to listen to events from Server */
     webSocket.addEventListener("message", msg => {
       const data = JSON.parse(msg.data);
-      console.log("data", data);
       dispatch({
         ...data,
         fromRemote: true
@@ -131,7 +115,7 @@ export default function useApplicationData() {
       day: day
     });
 
-  const bookInterview = function (id, interview) {
+  const bookInterview = function(id, interview) {
     const appointment = {
       ...state.appointments[id],
       interview: interview
@@ -145,7 +129,7 @@ export default function useApplicationData() {
     });
   };
 
-  const cancelInterview = function (id) {
+  const cancelInterview = function(id) {
     const appointment = {
       ...state.appointments[id],
       interview: null

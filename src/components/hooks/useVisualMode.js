@@ -5,9 +5,7 @@ export default function useVisualMode(initialValue) {
   const [history, setHistory] = useState([initialValue]);
 
   const transition = function(newMode, replace = false) {
-    console.log(`TRANSITIONING TO ${newMode}...`);
     if (replace) {
-      console.log("replacing..");
       setMode(newMode);
       setHistory(prev => [...prev.slice(0, -1), newMode]);
     } else {
@@ -17,21 +15,17 @@ export default function useVisualMode(initialValue) {
   };
 
   const back = function() {
-    console.log(`BACKING...`);
     // Back Limit to prevent history array from being empty
     if (history.length > 1) {
       setMode(history[history.length - 2]);
-      console.log("current mode", mode);
       setHistory(prev => [...prev.slice(0, -1)]);
     }
-    // gets the last element in history array
   };
 
-  // console.log("history", history);
   return { mode, transition, back };
 }
 
-/* FUCK HISTORY */
+/* Another Implementation HISTORY */
 /*
 export default function useVisualMode(initialValue) {
   const [mode, setMode] = useState([initialValue]);
