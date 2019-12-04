@@ -8,6 +8,7 @@ import useVisualMode from "../hooks/useVisualMode";
 import Status from "components/Appointment/Status";
 import Confirm from "components/Appointment/Confirm";
 import Error from "components/Appointment/Error";
+import axios from "axios";
 
 export default function Appointment(props) {
   const [message, setMessage] = useState("");
@@ -55,6 +56,10 @@ export default function Appointment(props) {
         transition(ERROR_DELETE, true);
       });
   };
+
+  if (process.env.REACT_APP_API_BASE_URL) {
+    axios.defaults.baseURL = process.env.REACT_APP_API_BASE_URL;
+  }
 
   return (
     <article className="appointment" data-testid="appointment">
