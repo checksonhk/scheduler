@@ -1,6 +1,7 @@
 export default function reducer(oldState, action) {
   // REFRACTOR TO OBJECT STATEMENTS
   /* Helper Functions */
+
   switch (action.type) {
     case "INIT_DATA":
       return {
@@ -34,7 +35,13 @@ export default function reducer(oldState, action) {
         if (index === idx && action.fromRemote) {
           return {
             ...day,
-            spots: day.spots + (action.interview ? -1 : 1)
+            spots:
+              day.spots +
+              (oldState.appointments[action.id].interview
+                ? 0
+                : action.interview
+                ? -1
+                : 1)
           };
         }
         return day;

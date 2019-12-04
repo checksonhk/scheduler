@@ -79,8 +79,7 @@ export default function useApplicationData() {
         dispatch({
           type: "SET_INTERVIEW",
           id,
-          interview: null,
-          increase: true
+          interview: null
         });
       });
   };
